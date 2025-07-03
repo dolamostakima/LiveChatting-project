@@ -1,22 +1,33 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Chat & File Sharing</title>
+  <title>Live Chat + File Sharing</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h2>Wellcome to chatting </h2>
-  <div id="chat-box"></div>
+  <div id="login">
+	<h2>
+		If you chat me ?
+	</h2>
+	<h3>Login here..</h3>
+    <input type="text" id="username" placeholder="Enter your name" />
+    <button onclick="setUsername()">Join Chat</button>
+  </div>
 
-  <form id="chat-form">
-    <input id="msg" autocomplete="off" placeholder="Enter message..." />
-    <button>Send</button>
-  </form>
+  <div id="chat-container" style="display: none;">
+    <h2>Live Chat Room</h2>
+    <div id="chat-box"></div>
 
-  <form id="upload-form" enctype="multipart/form-data">
-    <input type="file" name="file" id="fileInput" />
-    <button type="submit">Upload File</button>
-  </form>
+    <form id="chat-form">
+      <input id="msg" autocomplete="off" placeholder="Type a message..." />
+      <button>Send</button>
+    </form>
+
+    <form id="upload-form" enctype="multipart/form-data">
+      <input type="file" id="fileInput" />
+      <button type="submit">Upload File</button>
+    </form>
+  </div>
 
   <script src="/socket.io/socket.io.js"></script>
   <script src="client.js"></script>

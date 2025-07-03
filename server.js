@@ -15,27 +15,45 @@ const storage = multer.diskStorage({
     cb(null, Date.now() + "_" + file.originalname);
   },
 });
+
 const upload = multer({ storage: storage });
 
 app.use(express.static("public"));
-app.use("/uploads", express.static("uploads"));
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
 
 
 app.post("/upload", upload.single("file"), (req, res) => {
   const fileUrl = `/uploads/${req.file.filename}`;
-  io.emit("file-uploaded", { fileName: req.file.originalname, fileUrl });
-  res.send("File uploaded");
+  const uploader = req.headers.username || "Unknown User";
+  io.emit("file-uploaded", {
+    name: uploader,
+    fileName: req.file.originalname,
+    fileUrl,
+  });
+  res.sendStatus(200);
 });
 
-io.on("connection", (socket) => {
-  console.log("New user connected");
 
-  socket.on("chat message", (msg) => {
-    io.emit("chat message", msg);
+io.on("connection", (socket) => {
+  let userName = "";
+
+  socket.on("set username", (name) => {
+    userName = name;
+    socket.broadcast.emit("system message", `👤 ${userName} joined the chat`);
+  });
+
+  socket.on("chat message", (data) => {
+    io.emit("chat message", {
+      name: data.name,
+      text: data.text,
+    });
   });
 
   socket.on("disconnect", () => {
-    console.log("User disconnected");
+    if (userName) {
+      io.emit("system message", `👤 ${userName} left the chat`);
+    }
   });
 });
 
